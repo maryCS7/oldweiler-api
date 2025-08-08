@@ -21,3 +21,4 @@ class ContactForm(BaseModel):
     name: str
     email: str
     message: str
+    company: Optional[str] = ""  # Honeypot field (hidden in frontend)
