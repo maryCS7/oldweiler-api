@@ -1,6 +1,6 @@
 import os
 import logging
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Request
 from schemas import ContactForm
 from routers.send_email import send_email_with_resend
 
@@ -17,7 +17,13 @@ router = APIRouter(
 )
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def submit_contact_form(form: ContactForm):
+def submit_contact_form(form: ContactForm, request: Request):
+    # Import rate limiting function from main
+    from main import check_rate_limit
+    
+    # Check rate limit before processing
+    check_rate_limit(request)
+    
     env = os.getenv("ENV", "development")
 
     try:

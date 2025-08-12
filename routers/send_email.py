@@ -8,9 +8,19 @@ import resend
 router = APIRouter()
 
 load_dotenv()
-resend.api_key = os.getenv("RESEND_API_KEY")
-if not resend.api_key:
+
+# Get configuration from environment variables with sensible defaults
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+FROM_EMAIL = os.getenv("FROM_EMAIL", "info@oldweilercustomcarpentry.com")
+TO_EMAIL = os.getenv("TO_EMAIL", "mary.schroth719@gmail.com")
+COMPANY_NAME = os.getenv("COMPANY_NAME", "Oldweiler Custom Carpentry")
+COMPANY_LOCATION = os.getenv("COMPANY_LOCATION", "Bennington, NY")
+
+# Validate required configuration
+if not RESEND_API_KEY:
     raise RuntimeError("Missing RESEND_API_KEY in environment variables")
+
+resend.api_key = RESEND_API_KEY
 
 
 class EmailRequest(BaseModel):
@@ -27,8 +37,8 @@ def send_email_with_resend(data: EmailRequest):
     print(f"[{request_id}] Message: {data.message}")
 
     email_payload = {
-        "from": "Oldweiler Custom Carpentry <info@oldweilercustomcarpentry.com>",
-        "to": ["mary.schroth719@gmail.com"],
+        "from": f"{COMPANY_NAME} <{FROM_EMAIL}>",
+        "to": [TO_EMAIL],
         "reply_to": data.email,
         "subject": f"New contact form message from {data.name}",
         "html": (
@@ -66,20 +76,20 @@ def send_email_with_resend(data: EmailRequest):
               <p style="font-size: 16px; line-height: 1.6;">
                 In the meantime, feel free to check out recent projects or follow up by call or text.
               </p>
-              <p style="margin-top: 30px;">— Aaron Oldweiler<br/>Oldweiler Custom Carpentry</p>
+              <p style="margin-top: 30px;">— Aaron Oldweiler<br/>{COMPANY_NAME}</p>
               <hr style="margin: 30px 0;" />
-              <p style="font-size: 14px; color: #666;">Based in Attica, NY — serving the surrounding areas</p>
+              <p style="font-size: 14px; color: #666;">Based in {COMPANY_LOCATION} — serving the surrounding areas</p>
             </div>
         """
 
         resend.Emails.send({
-            "from": "Oldweiler Custom Carpentry <info@oldweilercustomcarpentry.com>",
+            "from": f"{COMPANY_NAME} <{FROM_EMAIL}>",
             "to": [data.email],
             "subject": "Thanks for contacting Oldweiler Custom Carpentry!",
             "html": confirmation_html,
             "text": (
                 f"Hi {data.name},\n\nThanks for reaching out! Your message has been received, "
-                "and I’ll be in touch soon.\n\n— Aaron Oldweiler\nOldweiler Custom Carpentry"
+                "and I’ll be in touch soon.\n\n— Aaron Oldweiler\n{COMPANY_NAME}"
             ),
         })
         print(f"[{request_id}] ✅ Confirmation email sent to user")
