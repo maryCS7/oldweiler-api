@@ -115,14 +115,24 @@ async def initialize_database():
     try:
         from models import Review
         from database import engine
+        from sqlalchemy import text
         
         # Create all tables
         Review.metadata.create_all(bind=engine)
         
-        logger.info("Database tables created successfully")
+        # Check if email column exists, if not add it
+        try:
+            with engine.connect() as conn:
+                # Try to add email column if it doesn't exist
+                conn.execute(text("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS email VARCHAR(255)"))
+                conn.commit()
+        except Exception as e:
+            logger.info(f"Email column already exists or couldn't be added: {e}")
+        
+        logger.info("Database tables created/updated successfully")
         return {
             "status": "success",
-            "message": "Database tables created successfully",
+            "message": "Database tables created/updated successfully",
             "timestamp": time.time()
         }
     except Exception as e:
