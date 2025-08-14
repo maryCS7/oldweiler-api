@@ -5,7 +5,6 @@ import re
 
 class ReviewBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Customer name")
-    email: EmailStr = Field(..., description="Customer email address")
     text: str = Field(..., min_length=10, max_length=1000, description="Review text")
     rating: Optional[int] = Field(None, ge=1, le=5, description="Rating from 1-5")
 
