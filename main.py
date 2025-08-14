@@ -108,3 +108,26 @@ async def health_check():
             "error": str(e),
             "database": "disconnected"
         }, 500
+
+@app.get("/init-db")
+async def initialize_database():
+    """Initialize database tables (for production setup)"""
+    try:
+        from models import Review
+        from database import engine
+        
+        # Create all tables
+        Review.metadata.create_all(bind=engine)
+        
+        logger.info("Database tables created successfully")
+        return {
+            "status": "success",
+            "message": "Database tables created successfully",
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        logger.error(f"Database initialization failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to initialize database: {str(e)}"
+        )
