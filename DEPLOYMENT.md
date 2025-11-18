@@ -57,7 +57,7 @@ RESEND_API_KEY=re_... (Resend API key)
 ENV=production
 ALLOWED_ORIGINS=https://oldweilercustomcarpentry.com,https://www.oldweilercustomcarpentry.com
 FROM_EMAIL=info@oldweilercustomcarpentry.com
-TO_EMAIL=aaronoldweiler@gmail.com
+TO_EMAIL=OldweilerCustomCarpentry@gmail.com
 COMPANY_NAME=Oldweiler Custom Carpentry
 COMPANY_LOCATION=Bennington, NY
 ```
